@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="background"></div>
+
+    <div class="iconbox top right">
+			<img src="icons/close.svg" id="close-icon">
+		</div>
+
+    <div class="iconbox bottom left">
+			<img data-message="playRandomVideo" src="icons/shuffle.svg">
+			<img id="addToPlaylist" src="icons/plus.svg">
+			<img data-message="playPreviousVideo" src="icons/skip-previous.svg">
+			<div data-message="toggleVideo">
+				<img id="pauseVideo" src="icons/pause.svg">
+				<img id="playVideo" src="icons/play.svg">
+			</div>
+			<img data-message="playNextVideo" src="icons/skip-next.svg">
+			<div id="volumeControl">
+				<div id="volumeIcons" data-message="toggleVideoMute">
+					<img id="volumeOff" src="icons/volume-off.svg">
+					<img id="volumeMedium" src="icons/volume-medium.svg">
+					<img id="volumeHigh" src="icons/volume-high.svg">
+				</div>
+				<div id="volumeSliderHolder">
+					<input type="range" id="volumeSlider">
+				</div>
+			</div>
+		</div>
+
+    <div class="iconbox bottom right">
+      <img id="likeButton" src="icons/thumb-up.svg" data-message="toggleLike">
+      <img id="dislikeButton" src="icons/thumb-down.svg" data-message="toggleDislike">
+    </div>
+
+  	<div id="videoInformation">
+  		<img id="authorImg" data-message="clickOnAuthor">
+  		<div id="videotext">
+  			<span id="author" data-message="clickOnAuthor"></span><br>
+  			<span id="videotitle" data-message="focusTab"></span>
+  		</div>
+
+			<div id="progress">
+				<div id="progressPlayed"></div>
+				<div id="progressLoaded"></div>
+				<div id="progressRest"></div>
+			</div>
+
+			<input type="range" id="progressSlider">
+
+			<div id="time">
+				<div id="actualTime">0:00</div>
+				<div id="timeSpacer">/</div>
+				<div id="totalTime">0:00</div>
+			</div>
+    </div>
+  </body>
+</html>

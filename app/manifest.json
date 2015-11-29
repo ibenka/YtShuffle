@@ -1,0 +1,19 @@
+{
+	"manifest_version": 2,
+	"name": "YtShuffle App",
+	"version": "1",
+	"icons": {
+		"16": "ytIcon/icon16.png",
+		"48": "ytIcon/icon48.png",
+		"128": "ytIcon/icon128.png"
+	},
+	"permissions": [
+		"alwaysOnTopWindows",
+		"https://i.ytimg.com/*"
+	],
+	"app": {
+		"background": {
+			"scripts": [ "background.js" ]
+		}
+	}
+}

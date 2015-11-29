@@ -1,0 +1,362 @@
+html {
+	height: calc(100vh - 2px);
+	border: 1px solid black;
+	-webkit-app-region: drag;
+}
+
+body {
+	height: 100%;
+}
+
+body :not(div) {
+	-webkit-app-region: no-drag;
+}
+
+#background {
+  opacity: 0.4;
+  top: 0;
+  left: 0;
+  position: fixed;
+	width: 100%;
+	height: 100vh;
+	z-index: -1;
+}
+
+.iconbox {
+	position: fixed;
+}
+
+.iconbox * {
+	float: left;
+	height: 27px;
+	cursor: pointer;
+}
+
+.iconbox img {
+	opacity: 0.6;
+}
+
+.iconbox img:hover {
+	opacity: 1;
+}
+
+[data-message] {
+	cursor: pointer;
+}
+
+#author:hover, #videotitle:hover {
+	color: blue;
+}
+
+.top {
+	top: 8px;
+}
+
+.left {
+	left: 8px;
+}
+
+.right {
+	right: 8px;
+}
+
+.bottom {
+	bottom: 8px;
+}
+
+#volumeSliderHolder {
+	overflow: hidden;
+	width: 0;
+	transition: width 0.2s;
+	margin-left: 4px;
+}
+
+#volumeControl:hover > #volumeSliderHolder {
+	width: 50px;
+}
+
+#time > div {
+	float: left;
+}
+
+#timeSpacer {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+#settings-icon {
+	margin-right: 4px;
+}
+
+#likeButton {
+	margin-right: 8px;
+}
+
+#likeButton:not([data-toggled]), #dislikeButton:not([data-toggled]) {
+	-webkit-filter: brightness(0);
+}
+
+#playVideo {
+	display: none;
+}
+
+#authorImg {
+	width: 48px;
+	border-radius: 50%;
+}
+
+#authorImg, #videotext {
+	float: left;
+}
+
+#videotext {
+	width: calc(100% - 74px);
+	margin-left: 8px;
+	margin-top: 12px;
+}
+
+#videotext > span {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: inline-block;
+}
+
+#videoInformation {
+	position: relative;
+	top: 45px;
+	height: 74px;
+}
+
+#time {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	color: rgb(100, 100, 100);
+}
+
+#progress {
+	width: 100%;
+	height: 3px;
+	bottom: 18px;
+}
+
+#progressSlider {
+	position: fixed;
+	width: calc(100% - 18px);
+	bottom: 68px;
+	left: 7px;
+	height: 3px;
+	cursor: pointer;
+	z-index: 3;
+	opacity: 0;
+}
+
+#progress, #progress > div {
+	position: absolute;
+}
+
+#progress > div {
+	height: 100%;
+	left: 0;
+}
+
+#progressPlayed {
+	background-color: #F12B24;
+	z-index: 2;
+	width: 0;
+}
+
+#progressLoaded {
+	background-color: rgba(255,255,255,.5);
+	z-index: 1;
+	width: 0;
+}
+
+#progressRest {
+	background-color: rgba(255,255,255,.2);
+	width: 100%;
+}
+
+#volumeMedium, #volumeHigh {
+	display: none;
+}
+
+/* Volume Slider
+ * stackoverflow.com/questions/18389224/
+ * jsfiddle.net/1xg1j3tw/ */
+
+#volumeSlider {
+	-webkit-appearance: none;
+	overflow-x: hidden;
+	width: 50px;
+	background: transparent;
+	margin: 0;
+}
+
+#volumeSlider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	position: relative;
+	pointer-events: none;
+	width: 4px;
+	height: 100%;
+}
+
+#volumeSlider::-webkit-slider-runnable-track {
+	background: rgba(255,255,255,.2);
+	height: 3px;
+	margin: 5px 0;
+}
+
+#volumeSlider::-webkit-slider-thumb:before {
+	content: "-";
+	line-height: 0;
+	position: absolute;
+	left: -3000px;
+	right: 4px;
+	top: 0;
+	bottom: 0;
+	background: #F12B24;
+}
+
+#volumeSlider::-webkit-slider-thumb:after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: -5px;
+	bottom: -5px;
+	background: #F12B24;
+	z-index: 1;
+}
+
+#volumeSlider:focus {
+	outline: none;
+}
+
+/* Playlist Content */
+
+#playlistContent {
+	display: none;
+}
+
+#backIcon {
+	position: fixed;
+	left: 4px;
+	top: 4px;
+}
+
+#playlistTextfield {
+	position: fixed;
+	top: 10px;
+	left: 34px;
+	white-space: nowrap;
+	overflow: hidden;
+	outline: none;
+	width: calc(100% - 38px);
+	cursor: text;
+}
+
+#playlistTextfield br {
+	display: none;
+}
+
+#playlistTextfield * {
+	display: inline;
+	white-space: nowrap;
+}
+
+#playlistTextfield:empty:not(:focus):before{
+	content: attr(data-placeholder);
+	color: gray;
+}
+
+#playlistList {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	position: fixed;
+	top: 28px;
+	height: calc(100vh - 35px);
+	overflow-y: scroll;
+}
+
+.listelement {
+	width: 260px;
+	padding-left: calc(((100% - 260px) / 2) - 1px);
+	padding-right: calc(((100% - 260px) / 2) - 1px);
+	height: 25px;
+	cursor: pointer;
+}
+
+.listelement:hover {
+	background-color: #eee;
+}
+
+.listelement > input, .listelement > .description {
+	float: left;
+}
+
+[type="checkbox"] {
+	cursor: pointer;
+	-webkit-appearance: none;
+	outline: none;
+	width: 21px;
+	height: 21px;
+	margin: 2px 5px 0 0;
+	background-image: url("icons/checkbox-unchecked.png");
+}
+
+[type="checkbox"]:checked {
+	background-image: url("icons/checkbox-checked.png");
+}
+
+.description {
+	line-height: 25px;
+}
+
+.private, .unlisted, .public {
+	width: 16px;
+	height: 16px;
+	margin-top: 5px;
+	float: right;
+	opacity: 0.3;
+	background-repeat: no-repeat;
+}
+
+.private {
+	background-image: url("icons/private.png");
+}
+
+.unlisted {
+	background-image: url("icons/unlisted.png");
+}
+
+.public {
+	background-image: url("icons/public.png");
+}
+
+.addIcons {
+	cursor: default;
+}
+
+.addIcons.public {
+	padding-right: 3px;
+}
+
+.addIcons.unlisted {
+	padding-right: 2px;
+}
+
+.addIcons.selected {
+	opacity: 1;
+}
+
+#createNewPlaylist {
+	display: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
