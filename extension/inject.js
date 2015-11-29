@@ -126,9 +126,9 @@ mailbox.receive("playRandomVideo", () => {
 
 mailbox.receive("playPreviousVideo", () => {
   let button = document.querySelector(".ytp-prev-button");
-	if (!button || button.style.display === "none")
+  if (!button || button.style.display === "none")
     video.currentTime = 0;
-	else
+  else
     button.click();
 });
 
@@ -156,12 +156,12 @@ mailbox.receive("toggleLike", () => {
 
 mailbox.receive("toggleDislike", () => {
   let dislBtnClicked = document.querySelector(".like-button-renderer-dislike-button-clicked");
-	let dislBtnUnclicked = document.querySelector(".like-button-renderer-dislike-button-unclicked");
+  let dislBtnUnclicked = document.querySelector(".like-button-renderer-dislike-button-unclicked");
 
-	if (window.getComputedStyle(dislBtnClicked).getPropertyValue("display") === "none")
-		dislBtnUnclicked.click();
-	else
-		dislBtnClicked.click();
+  if (window.getComputedStyle(dislBtnClicked).getPropertyValue("display") === "none")
+    dislBtnUnclicked.click();
+  else
+    dislBtnClicked.click();
 });
 
 mailbox.receive("changeVideoTime", time => {

@@ -12,12 +12,12 @@ let helper = {
   },
   getImage: (url, callback) => {
     let xhr = new XMLHttpRequest();
-  	xhr.open("GET", url, true);
-  	xhr.responseType = "blob";
-  	xhr.onload = function() {
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+    xhr.onload = function() {
       callback(window.URL.createObjectURL(this.response));
     };
-  	xhr.send();
+    xhr.send();
   }
 }
 
