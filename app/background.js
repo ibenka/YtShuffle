@@ -19,7 +19,7 @@ let helper = {
     };
     xhr.send();
   }
-}
+};
 
 // Starts the communication between the content script behind the mailbox and the appwindow.
 function startCommunication(mailbox, appWindow, window, document) {
@@ -76,18 +76,26 @@ function startCommunication(mailbox, appWindow, window, document) {
   document.querySelector("#progressSlider").addEventListener("change", function() {
     mailbox.send("changeVideoTime", this.value / 100 * totalTime);
   });
+
+  // When the user clicks on the close button, the connection and app window will be closed.
+  // The content script will take care of deleting itself.
+  document.querySelector("#close-icon").addEventListener("click", () => {
+    mailbox.port.disconnect();
+    window.close();
+  });
 }
 
 // When a new content script connects to the app, a new mailbox and window is created
 // for this connection. After the window DOM has loaded, the communication between the
 // content script and the window is started.
 // It is possible to have multiple app windows and tabs communicating at the same time.
-const extensionId = "llgbaaeamnfbpoejliheafgejckikfej";
+const extensionId = "bneihopkpfcmdbhoocebjaicaefalmoh";
 chrome.runtime.onConnectExternal.addListener(port => {
   if (port.sender.id !== extensionId)
     return;
 
   let mailbox = {
+    port,
     send: (task, data) => {
       port.postMessage({
         task, data
@@ -111,7 +119,9 @@ chrome.runtime.onConnectExternal.addListener(port => {
       top: screen.availHeight - 190
     }
   }, window => {
-    port.onDisconnect.addListener(() => window.close());
+    port.onDisconnect.addListener(() => {
+      window.close();
+    });
 
     window.setAlwaysOnTop(true);
     window.contentWindow.document.addEventListener("DOMContentLoaded", () => {

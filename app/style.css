@@ -32,20 +32,20 @@ body :not(div) {
   cursor: pointer;
 }
 
-.iconbox img {
+.iconbox img, #videotext > span {
   opacity: 0.6;
 }
 
-.iconbox img:hover {
+#authorImg {
+  opacity: 0.8;
+}
+
+.iconbox img:hover, #videotext > span:hover, #authorImg:hover {
   opacity: 1;
 }
 
 [data-message] {
   cursor: pointer;
-}
-
-#author:hover, #videotitle:hover {
-  color: blue;
 }
 
 .top {
