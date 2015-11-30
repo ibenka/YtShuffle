@@ -1,6 +1,6 @@
-"use strict";
-
 (function() {
+  "use strict";
+
   // Initialize the connection to the app
   const appId = "gddfoliippeobljencfionnnkgbnafcc";
   let port = chrome.runtime.connect(appId);
