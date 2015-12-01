@@ -129,6 +129,10 @@
     mailbox.send("updateTotalTime", video.duration);
   });
 
+  video.addEventListener("volumechange", () => {
+    mailbox.send("updateVolume", video.volume);
+  });
+
   // Adding listeners for app messages.
   // The video is updated according to these messages.
 
@@ -186,6 +190,11 @@
 
   mailbox.receive("changeVideoTime", time => {
     video.currentTime = time;
+  });
+
+  mailbox.receive("changeVolume", volume => {
+    console.log("TODO: Change Volume to " + volume);
+    // TODO
   });
 
   // When the app window is closed, this content script should be deleted, so it can be injected

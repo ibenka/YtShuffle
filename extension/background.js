@@ -1,7 +1,5 @@
 "use strict";
 
-let alreadyInjectedIds = [];
-
 // Registers the pageAction for youtube watch urls
 chrome.runtime.onInstalled.addListener(() => {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {

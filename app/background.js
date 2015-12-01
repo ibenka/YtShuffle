@@ -24,14 +24,18 @@ let helper = {
 // Starts the communication between the content script behind the mailbox and the appwindow.
 function startCommunication(mailbox, appWindow, window, document) {
   let totalTime;
+  function updateTotalTime(time) {
+    totalTime = parseInt(time);
+    document.querySelector("#totalTime").textContent = helper.parseTime(totalTime);
+    document.querySelector("#progressSlider").max = totalTime;
+  }
 
   // Updates the document according to the data send from the content script
 
   mailbox.receive("updateVideo", message => {
     document.querySelector("#author").textContent = message.author;
     document.querySelector("#videotitle").textContent = message.title;
-    totalTime = parseInt(message.length_seconds);
-    document.querySelector("#totalTime").textContent = helper.parseTime(message.length_seconds);
+    updateTotalTime(message.length_seconds);
     helper.getImage(message.iurlmq_webp || message.iurlmq, blob => {
       document.querySelector("#background").style["background-image"] = "url('" + blob + "')";
     });
@@ -50,9 +54,11 @@ function startCommunication(mailbox, appWindow, window, document) {
     document.querySelector("#progressLoaded").style.width = (bufferEnd / totalTime * 100) + "%";
   });
 
-  mailbox.receive("updateTotalTime", time => {
-    totalTime = parseInt(time);
-    document.querySelector("#totalTime").textContent = helper.parseTime(time);
+  mailbox.receive("updateTotalTime", time => updateTotalTime(time));
+
+  mailbox.receive("volumeChange", volume => {
+    document.querySelector("#volumeSlider").value = volume / maxVolume * 100;
+    // TODO
   });
 
   mailbox.receive("updateLikes", status => {
@@ -72,16 +78,21 @@ function startCommunication(mailbox, appWindow, window, document) {
     button.addEventListener("click", () => mailbox.send(button.dataset.message));
   });
 
-  // When the user clicks on the video progress bar, the invisible slider on top is triggered
-  document.querySelector("#progressSlider").addEventListener("change", function() {
-    mailbox.send("changeVideoTime", this.value / 100 * totalTime);
-  });
-
   // When the user clicks on the close button, the connection and app window will be closed.
   // The content script will take care of deleting itself.
   document.querySelector("#close-icon").addEventListener("click", () => {
     mailbox.port.disconnect();
     window.close();
+  });
+
+  // Sends a message to the content script, when the value of the volume slider is changed
+  document.querySelector("#volumeSlider").addEventListener("input", function() {
+    mailbox.send("changeVolume", this.value / 100);
+  });
+
+  // When the user clicks on the video progress bar, the invisible slider on top is triggered
+  document.querySelector("#progressSlider").addEventListener("change", function() {
+    mailbox.send("changeVideoTime", this.value);
   });
 }
 

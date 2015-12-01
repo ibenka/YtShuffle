@@ -179,6 +179,34 @@ body :not(div) {
   width: 100%;
 }
 
+#timePopup::before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+  margin-top: 20px;
+}
+
+#timePopup {
+  display: none;
+  color: white;
+  position: fixed;
+  background: black;
+  padding: 5px;
+  margin-top: -40px;
+  border-radius: 4px;
+  margin-left: -17px;
+}
+
+/* TODO: The timePopup won't always disappear if the mouse is moved out of the progressSlider */
+#progressSlider:hover + #timePopup {
+  display: block;
+}
+
 #volumeMedium, #volumeHigh {
   display: none;
 }
