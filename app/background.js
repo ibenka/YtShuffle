@@ -144,7 +144,7 @@ chrome.runtime.onConnectExternal.addListener(port => {
 
   let mailbox = {
     port,
-    send: (task, data, callback) => {
+    send: (task, data) => {
       port.postMessage({
         task, data
       });
