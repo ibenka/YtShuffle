@@ -227,7 +227,7 @@
       listItems = listItems.map(item => ({
         checked: item.querySelector("button").getAttribute("aria-checked"),
         name: item.querySelector(".playlist-name").innerHTML,
-			  access: item.querySelector(".yt-sprite").getAttribute("class")
+        access: item.querySelector(".yt-sprite").getAttribute("class")
             .replace("yt-sprite", "").replace("-icon","").trim(),
         id: item.getAttribute("data-full-list-id")
       }));

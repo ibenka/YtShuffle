@@ -281,17 +281,17 @@ body :not(div) {
 }
 
 #playlistItems input[type="checkbox"] {
-	cursor: pointer;
-	-webkit-appearance: none;
-	outline: none;
-	width: 21px;
-	height: 21px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  outline: none;
+  width: 21px;
+  height: 21px;
   margin-left: 8px;
-	background-image: url("icons/checkbox-unchecked.png");
+  background-image: url("icons/checkbox-unchecked.png");
 }
 
 #playlistItems input[type="checkbox"]:checked {
-	background-image: url("icons/checkbox-checked.png");
+  background-image: url("icons/checkbox-checked.png");
 }
 
 #playlistBox [for="playlistToggler"] img {
