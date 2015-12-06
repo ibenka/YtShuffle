@@ -151,7 +151,6 @@
   });
 
   mailbox.receive("playRandomVideo", () => {
-    document.querySelector("#logo-container").click();
     new MutationObserver(function() {
       let recommendedLink = document.querySelector("a[href='/feed/recommended']");
       if (recommendedLink) {
@@ -160,6 +159,7 @@
         this.disconnect();
       }
     }).observe(document.querySelector("#content"), { childList: true, subtree: true });
+    document.querySelector("#logo-container").click();
   });
 
   mailbox.receive("playPreviousVideo", () => {
