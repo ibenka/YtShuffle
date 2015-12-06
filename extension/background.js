@@ -19,14 +19,14 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // When the page action is clicked, the script is injected
-chrome.pageAction.onClicked.addListener(tab => {
+chrome.pageAction.onClicked.addListener(() => {
   chrome.tabs.executeScript({
     file: "inject.js"
   });
 });
 
 // Focuses the tab on request of a content script
-chrome.runtime.onMessage.addListener((request, sender, response) => {
+chrome.runtime.onMessage.addListener((request, sender) => {
   if (request.task === "focusTab") {
     chrome.tabs.update(sender.tab.id, { highlighted: true });
     chrome.windows.update(sender.tab.windowId, { focused: true });

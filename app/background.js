@@ -4,11 +4,12 @@
 let helper = {
   parseTime: time => {
     time = parseInt(time);
-    let minutes = Math.floor(time / 60);
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor(time % 3600 / 60);
     let seconds = time % 60;
-    if (seconds < 10)
-      seconds = "0" + seconds;
-    return minutes + ":" + seconds;
+    return (hours ? hours + ":" : "")
+        + (hours && minutes < 10 ? "0" + minutes : minutes) + ":"
+        + (seconds < 10 ? "0" + seconds : seconds);
   },
   getImage: (url, callback) => {
     let xhr = new XMLHttpRequest();
@@ -56,9 +57,16 @@ function startCommunication(mailbox, appWindow, window, document) {
 
   mailbox.receive("updateTotalTime", time => updateTotalTime(time));
 
-  mailbox.receive("volumeChange", volume => {
-    document.querySelector("#volumeSlider").value = volume / maxVolume * 100;
-    // TODO
+  mailbox.receive("updateVolume", status => {
+    document.querySelector("#volumeSlider").value = status.volume;
+    Array.from(document.querySelectorAll("#volumeIcons img")).forEach(e =>
+        e.style.display = "none");
+    if (status.volume === 0 || status.muted)
+      document.querySelector("#volumeOff").style.display = "block";
+    else if (status.volume > 0 && status.volume <= 50)
+      document.querySelector("#volumeMedium").style.display = "block";
+    else
+      document.querySelector("#volumeHigh").style.display = "block";
   });
 
   mailbox.receive("updateLikes", status => {
@@ -71,35 +79,64 @@ function startCommunication(mailbox, appWindow, window, document) {
       document.querySelector("#dislikeButton").dataset.toggled = "true";
   });
 
-  // When the user clicks on a button associated with a data-message,
-  // the message specified in the attribute is send to the content script.
-  let messageButtons = Array.from(document.querySelectorAll("[data-message]"));
-  messageButtons.forEach(button => {
+  mailbox.receive("playlistItems", playlistItems => {
+    let playlistList = document.querySelector("#playlistItems");
+    playlistList.innerHTML = "";
+    playlistItems.forEach(playlist => {
+      let listItem = document.createElement("label");
+
+      let checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = playlist.checked === "checked";
+      listItem.appendChild(checkbox);
+
+      let namebox = document.createElement("div");
+      namebox.textContent = playlist.name;
+      listItem.appendChild(namebox);
+
+      let accessIcon = document.createElement("img");
+      accessIcon.src = ({
+        private: "icons/private.png",
+        unlisted: "icons/unlisted.png",
+        public: "icons/public.png"
+      })[playlist.access];
+      listItem.appendChild(accessIcon);
+
+      listItem.addEventListener("click", () => mailbox.send("togglePlaylist", playlist.id));
+      playlistList.appendChild(listItem);
+    });
+  });
+
+  // Sends messages to the content script according to the user action
+
+  Array.from(document.querySelectorAll("[data-message]")).forEach(button => {
     button.addEventListener("click", () => mailbox.send(button.dataset.message));
   });
 
-  // When the user clicks on the close button, the connection and app window will be closed.
-  // The content script will take care of deleting itself.
   document.querySelector("#close-icon").addEventListener("click", () => {
     mailbox.port.disconnect();
     window.close();
   });
 
-  // Sends a message to the content script, when the value of the volume slider is changed
   document.querySelector("#volumeSlider").addEventListener("input", function() {
     mailbox.send("changeVolume", this.value / 100);
   });
 
-  // When the user clicks on the video progress bar, the invisible slider on top is triggered
   document.querySelector("#progressSlider").addEventListener("change", function() {
     mailbox.send("changeVideoTime", this.value);
+  });
+
+  document.querySelector("#addToPlaylist").addEventListener("click", () => {
+    mailbox.send("playlistRequest");
   });
 }
 
 // When a new content script connects to the app, a new mailbox and window is created
 // for this connection. After the window DOM has loaded, the communication between the
-// content script and the window is started.
-// It is possible to have multiple app windows and tabs communicating at the same time.
+// content script and the window is started. It is possible to have multiple app windows
+// and tabs communicating at the same time.
+// It is also possible to have one tab communicate with multiple app windows,
+// however this function should probably be removed.
 const extensionId = "bneihopkpfcmdbhoocebjaicaefalmoh";
 chrome.runtime.onConnectExternal.addListener(port => {
   if (port.sender.id !== extensionId)
@@ -107,7 +144,7 @@ chrome.runtime.onConnectExternal.addListener(port => {
 
   let mailbox = {
     port,
-    send: (task, data) => {
+    send: (task, data, callback) => {
       port.postMessage({
         task, data
       });
@@ -123,7 +160,7 @@ chrome.runtime.onConnectExternal.addListener(port => {
   chrome.app.window.create("window.html", {
     resizable: false,
     frame: { type: "none" },
-    outerBounds: {
+    innerBounds: {
       width: 320,
       height: 180,
       left: screen.availWidth - 330,

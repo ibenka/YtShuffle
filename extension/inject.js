@@ -20,7 +20,8 @@
 
   // All Mutation Observer and Event Listener have to be disconnected if the connection to
   // the app is disconnected. To achieve this, they are added with a custom function
-  // which will add them to a list so they can be removed on disconnect.
+  // which will add them to a list so they can be removed on disconnect. As this script runs in
+  // another context than the site itself, overriding the methods directly is no problem.
 
   let listenerTracker = [];
   let originalEventListener = EventTarget.prototype.addEventListener;
@@ -32,15 +33,17 @@
   let mutationTracker = [];
   let originalMutationObserver = MutationObserver.prototype.observe;
   MutationObserver.prototype.observe = function(target, options) {
-    mutationTracker.push(target);
+    mutationTracker.push(this);
     originalMutationObserver.call(this, target, options);
   };
 
   let video = document.querySelector("video");
 
+  let previousVideoSource;
   function updateVideo() {
-    if (!video.src)
+    if (!video.src || video.src === previousVideoSource)
       return;
+    previousVideoSource = video.src;
 
     // When the video src changes, the new video data from ytplayer.config.args is send to the app.
     // As this content script can't access the variables directly, a script tag has to be injected
@@ -130,7 +133,10 @@
   });
 
   video.addEventListener("volumechange", () => {
-    mailbox.send("updateVolume", video.volume);
+    mailbox.send("updateVolume", {
+      volume: parseInt(document.querySelector(".ytp-volume-panel").getAttribute("aria-valuenow")),
+      muted: video.muted
+    });
   });
 
   // Adding listeners for app messages.
@@ -145,7 +151,15 @@
   });
 
   mailbox.receive("playRandomVideo", () => {
-    // TODO
+    document.querySelector("#logo-container").click();
+    new MutationObserver(function() {
+      let recommendedLink = document.querySelector("a[href='/feed/recommended']");
+      if (recommendedLink) {
+        recommendedLink.closest(".feed-item-dismissable")
+            .querySelector(".shelf-content:first-child a").click();
+        this.disconnect();
+      }
+    }).observe(document.querySelector("#content"), { childList: true, subtree: true });
   });
 
   mailbox.receive("playPreviousVideo", () => {
@@ -193,15 +207,60 @@
   });
 
   mailbox.receive("changeVolume", volume => {
-    console.log("TODO: Change Volume to " + volume);
-    // TODO
+    let relativeVolume = document.querySelector(".ytp-volume-panel").getAttribute("aria-valuenow");
+    let maxVolume = parseInt(relativeVolume) * video.volume;
+    video.volume = volume * maxVolume;
+    // TODO: The slider isn't updated and youtube resets the volume on the next video
+    // Also, as this content script sends back the volume from the aria-label, which however isn't
+    // updated, the volume slider jumps back.
+    // One possibility would be to fire some events on the volume slider, however this doens't seem
+    // to work, probably the events arent't trusted so the event handler isn't called.
+    // Another way would be to call the methods directly but this would be pretty unstable
+    // and would probably break all the time because the method names are minified so the
+    // name would change all the time.
+  });
+
+  mailbox.receive("playlistRequest", () => {
+    let playlistBox = document.querySelector("#yt-uix-videoactionmenu-menu");
+    function sendPlaylists() {
+      let listItems = Array.from(playlistBox.querySelectorAll("ul[role='menu'] li"));
+      listItems = listItems.map(item => ({
+        checked: item.querySelector("button").getAttribute("aria-checked"),
+        name: item.querySelector(".playlist-name").innerHTML,
+			  access: item.querySelector(".yt-sprite").getAttribute("class")
+            .replace("yt-sprite", "").replace("-icon","").trim(),
+        id: item.getAttribute("data-full-list-id")
+      }));
+
+      mailbox.send("playlistItems", listItems);
+    }
+
+    // The playlists are loaded on the first click on the addto-button.
+    // If they are not loaded yet, the button is clicked and a MutationObserver is attached.
+    if (!playlistBox.querySelector("ul[role='menu']")) {
+      new MutationObserver(function() {
+        if (!playlistBox.querySelector("ul[role='menu']"))
+          return;
+        document.querySelector(".addto-button").click();
+        sendPlaylists();
+        this.disconnect();
+      }).observe(playlistBox, { childList: true, subtree: true });
+      document.querySelector(".addto-button").click();
+    } else {
+      sendPlaylists();
+    }
+  });
+
+  mailbox.receive("togglePlaylist", id => {
+    document.querySelector(`#yt-uix-videoactionmenu-menu [data-full-list-id="${id}"]`).click();
   });
 
   // When the app window is closed, this content script should be deleted, so it can be injected
   // again, if the user clicks the page action again.
+  // This means that all event listener & mutation observers should be removed.
   port.onDisconnect.addListener(() => {
-    listenerTracker.forEach(listener => {
-      listener.target.removeEventListener(listener.eventName, listener.callback);
-    });
+    listenerTracker.forEach(listener =>
+        listener.target.removeEventListener(listener.eventName, listener.callback));
+    mutationTracker.forEach(observer => observer.disconnect());
   });
 })();

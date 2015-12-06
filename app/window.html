@@ -3,10 +3,20 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
-    <script src="dom.js"></script>
   </head>
   <body>
     <div id="background"></div>
+
+    <input type="checkbox" id="playlistToggler">
+    <div id="playlistBox">
+      <div id="playlistTopbar">
+        <label for="playlistToggler">
+          <img src="icons/back.svg">
+        </label>
+        <input type="text" placeholder="Search or add playlists">
+      </div>
+      <div id="playlistItems"></div>
+    </div>
 
     <div class="iconbox top right">
       <img src="icons/close.svg" id="close-icon">
@@ -14,7 +24,9 @@
 
     <div class="iconbox bottom left">
       <img data-message="playRandomVideo" src="icons/shuffle.svg">
-      <img id="addToPlaylist" src="icons/plus.svg">
+      <label for="playlistToggler">
+        <img id="addToPlaylist" src="icons/plus.svg">
+      </label>
       <img data-message="playPreviousVideo" src="icons/skip-previous.svg">
       <div data-message="toggleVideo">
         <img id="pauseVideo" src="icons/pause.svg">
@@ -41,7 +53,8 @@
     <div id="videoInformation">
       <img id="authorImg" data-message="clickOnAuthor">
       <div id="videotext">
-        <span id="author" data-message="clickOnAuthor"></span><br>
+        <span id="author" data-message="clickOnAuthor"></span>
+        <br>
         <span id="videotitle" data-message="focusTab"></span>
       </div>
 
@@ -52,7 +65,6 @@
       </div>
 
       <input type="range" id="progressSlider">
-      <div id="timePopup"></div>
 
       <div id="time">
         <div id="actualTime">0:00</div>
