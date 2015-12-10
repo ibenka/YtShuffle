@@ -58,7 +58,12 @@ function startCommunication(mailbox, appWindow, window, document) {
   mailbox.receive("updateTotalTime", time => updateTotalTime(time));
 
   mailbox.receive("updateVolume", status => {
-    document.querySelector("#volumeSlider").value = status.volume;
+    // Only update the time if the volume slider isn't hovered because it will jump back
+    // and forth while the user drags it otherwise.
+    let volumeSlider = document.querySelector("#volumeSlider");
+    if (volumeSlider.parentElement.querySelector(":hover") !== volumeSlider)
+      volumeSlider.value = status.volume;
+
     Array.from(document.querySelectorAll("#volumeIcons img")).forEach(e =>
         e.style.display = "none");
     if (status.volume === 0 || status.muted)

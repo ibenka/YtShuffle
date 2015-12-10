@@ -132,15 +132,19 @@
     mailbox.send("updateTotalTime", video.duration);
   });
 
-  video.addEventListener("volumechange", () => {
+  function updateVolume() {
     mailbox.send("updateVolume", {
       volume: parseInt(document.querySelector(".ytp-volume-panel").getAttribute("aria-valuenow")),
       muted: video.muted
     });
-  });
+  };
+
+  video.addEventListener("volumechange", updateVolume);
 
   // Adding listeners for app messages.
   // The video is updated according to these messages.
+
+  mailbox.receive("appWindowLoaded", updateVolume);
 
   mailbox.receive("focusTab", () => {
     chrome.runtime.sendMessage({ task: "focusTab" }, function() {});
@@ -207,17 +211,21 @@
   });
 
   mailbox.receive("changeVolume", volume => {
-    let relativeVolume = document.querySelector(".ytp-volume-panel").getAttribute("aria-valuenow");
-    let maxVolume = parseInt(relativeVolume) * video.volume;
-    video.volume = volume * maxVolume;
-    // TODO: The slider isn't updated and youtube resets the volume on the next video
-    // Also, as this content script sends back the volume from the aria-label, which however isn't
-    // updated, the volume slider jumps back.
-    // One possibility would be to fire some events on the volume slider, however this doens't seem
-    // to work, probably the events arent't trusted so the event handler isn't called.
-    // Another way would be to call the methods directly but this would be pretty unstable
-    // and would probably break all the time because the method names are minified so the
-    // name would change all the time.
+    // It is not possible to update the volume of the video directly as the youtube slider
+    // won't update and the volume won't be saved and will be reset on the next video.
+    // Instead, the slider itself has to be moved by fireing mouse events.
+    let volumeSlider = document.querySelector(".ytp-volume-slider");
+    let sliderPosition = volumeSlider.getBoundingClientRect();
+    let width = parseInt(window.getComputedStyle(
+        document.querySelector(".ytp-volume-slider-track"), ":after").width);
+
+    let volumeEvent = type => new MouseEvent(type, {
+      bubbles: true,
+      clientX: volume * width + sliderPosition.left
+    });
+
+    volumeSlider.dispatchEvent(volumeEvent("mousedown"));
+    volumeSlider.dispatchEvent(volumeEvent("mouseup"));
   });
 
   mailbox.receive("playlistRequest", () => {
@@ -252,7 +260,7 @@
   });
 
   mailbox.receive("togglePlaylist", id => {
-    document.querySelector(`#yt-uix-videoactionmenu-menu [data-full-list-id="${id}"]`).click();
+    document.querySelector("#yt-uix-videoactionmenu-menu [data-full-list-id='" + id + "']").click();
   });
 
   // When the app window is closed, this content script should be deleted, so it can be injected
