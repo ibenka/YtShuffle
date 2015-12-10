@@ -62,7 +62,7 @@ function startCommunication(mailbox, appWindow, window, document) {
     // and forth while the user drags it otherwise.
     let volumeSlider = document.querySelector("#volumeSlider");
     if (volumeSlider.parentElement.querySelector(":hover") !== volumeSlider)
-      volumeSlider.value = status.volume;
+      volumeSlider.value = status.muted ? 0 : status.volume;
 
     Array.from(document.querySelectorAll("#volumeIcons img")).forEach(e =>
         e.style.display = "none");
