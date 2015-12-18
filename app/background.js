@@ -134,6 +134,17 @@ function startCommunication(mailbox, appWindow, window, document) {
   document.querySelector("#addToPlaylist").addEventListener("click", () => {
     mailbox.send("playlistRequest");
   });
+
+  document.querySelector("#playlistTopbar input").addEventListener("input", function() {
+    mailbox.send("updatePlaylistTextbox", this.value);
+  });
+
+  Array.from(document.querySelectorAll("#playlistPrivacyOverlay button")).forEach(button => {
+    button.addEventListener("click", function() {
+      mailbox.send("updatePlaylistTextbox", document.querySelector("#playlistTopbar input").value);
+      mailbox.send("addToNewPlaylist", this.dataset.privacy);
+    });
+  });
 }
 
 // When a new content script connects to the app, a new mailbox and window is created

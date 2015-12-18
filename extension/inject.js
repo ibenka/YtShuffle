@@ -234,7 +234,7 @@
       let listItems = Array.from(playlistBox.querySelectorAll("ul[role='menu'] li"));
       listItems = listItems.map(item => ({
         checked: item.querySelector("button").getAttribute("aria-checked"),
-        name: item.querySelector(".playlist-name").innerHTML,
+        name: item.querySelector(".playlist-name").textContent,
         access: item.querySelector(".yt-sprite").getAttribute("class")
             .replace("yt-sprite", "").replace("-icon","").trim(),
         id: item.getAttribute("data-full-list-id")
@@ -261,6 +261,24 @@
 
   mailbox.receive("togglePlaylist", id => {
     document.querySelector("#yt-uix-videoactionmenu-menu [data-full-list-id='" + id + "']").click();
+  });
+
+  mailbox.receive("updatePlaylistTextbox", text => {
+    let input = document.querySelector(".addto-search-box");
+    input.value = text;
+    input.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
+  });
+
+  mailbox.receive("addToNewPlaylist", privacy => {
+    let initialScrollPosition = document.body.scrollTop;
+    document.querySelector(".addto-button").click();
+    document.querySelector(".create-playlist-item").click();
+
+    let privacyButtons = document.querySelector(".addto-menu .privacy-button-container");
+    privacyButtons.querySelector("[data-privacy-state='privacy-" + privacy + "']").click();
+    document.querySelector(".create-playlist-buttons .create-button:not([disabled])").click();
+    console.log("restoring " + initialScrollPosition);
+    document.body.scrollTop = initialScrollPosition;
   });
 
   // When the app window is closed, this content script should be deleted, so it can be injected

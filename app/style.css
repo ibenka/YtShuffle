@@ -301,8 +301,17 @@ body :not(div) {
   height: 26px;
 }
 
+#addToNewPlaylist {
+  cursor: pointer;
+  right: 7px;
+  top: 7px;
+  height: 26px;
+  position: fixed;
+}
+
 #playlistTopbar {
   position: fixed;
+  z-index: 1;
 }
 
 #playlistBox input[type="text"] {
@@ -311,6 +320,7 @@ body :not(div) {
   position: fixed;
   left: 35px;
   top: 11px;
+  width: calc(100% - 70px);
 }
 
 #playlistItems div {
@@ -325,5 +335,75 @@ body :not(div) {
   float: right;
   opacity: 0.5;
   margin-top: 4px;
-  margin-right: 35px;
+  margin-right: 11px;
+}
+
+#playlistPrivacyOverlay::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: -11px;
+  right: 3px;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  transform: rotate(45deg);
+  background: white;
+  z-index: -1;
+}
+
+#playlistPrivacyOverlay::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: 0;
+  width: 30px;
+  height: 20px;
+}
+
+#playlistPrivacyOverlay {
+  display: none;
+  position: fixed;
+  top: 45px;
+  right: 4px;
+  background: white;
+  border: 1px solid black;
+}
+
+#addToNewPlaylist:hover + #playlistPrivacyOverlay,
+#playlistPrivacyOverlay:hover {
+  display: block;
+}
+
+#playlistPrivacyOverlay button {
+  background: none;
+  border: none;
+  display: block;
+  width: 180px;
+  cursor: pointer;
+  text-align: left;
+  padding: 5px;
+  outline: none;
+}
+
+#playlistPrivacyOverlay button:hover {
+  background: rgb(238, 238, 238);
+}
+
+#playlistPrivacyOverlay button[data-privacy]::before {
+  content: "";
+  padding-right: 16px;
+  margin-right: 5px;
+}
+
+#playlistPrivacyOverlay button[data-privacy="private"]::before {
+  background-image: url("icons/private.png");
+}
+
+#playlistPrivacyOverlay button[data-privacy="unlisted"]::before {
+  background-image: url("icons/unlisted.png");
+}
+
+#playlistPrivacyOverlay button[data-privacy="public"]::before {
+  background-image: url("icons/public.png");
 }
