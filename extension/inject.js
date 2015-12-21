@@ -246,12 +246,9 @@
     // The playlists are loaded on the first click on the addto-button.
     // If they are not loaded yet, the button is clicked and a MutationObserver is attached.
     if (!playlistBox.querySelector("ul[role='menu']")) {
-      new MutationObserver(function() {
-        if (!playlistBox.querySelector("ul[role='menu']"))
-          return;
-        document.querySelector(".addto-button").click();
-        sendPlaylists();
-        this.disconnect();
+      new MutationObserver(() => {
+        if (playlistBox.querySelector("ul[role='menu']"))
+          sendPlaylists();
       }).observe(playlistBox, { childList: true, subtree: true });
       document.querySelector(".addto-button").click();
     } else {
