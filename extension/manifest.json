@@ -12,7 +12,8 @@
     "declarativeContent"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "page_action": {
     "default_icon": {
